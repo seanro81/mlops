@@ -1,0 +1,129 @@
+Отчет по CodeReview(доработкам) проекта - исправленный проект лежит в ветке fix
+--------------------------------------------------------------------
+
+1) Тесты /tests/test_data.py
+     - убрать неиспользуемый импорт import pandas as pd
+     - двойной отступ до функции test_load_data
+     - исправить маршрут до CSV файла в соотвествии со структурой проекта на df = load_data("../data/uber.csv")
+
+2) Обработка сэмпла с данными  /src/data.py
+     - двойной отступ перед вызовом функций load_data и split_data
+     - типизация функций   load_data(path: str) -> pd.DataFrame
+                           split_data(data: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame):
+     - описание входа выхода функций и функционала
+
+           def load_data(path: str) -> pd.DataFrame:
+           """
+             Загружаем данные из CSV-файла.
+             Args:
+               path: Путь к файлу с данными.
+             Returns:
+                DataFrame с загруженными данными.
+           """
+
+           def split_data(data: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame):
+           """
+               Разделение выборки на Тестовую и Тренировочную
+               Args:
+                 data: сэмпл с данными.
+               Returns:
+                 DataFrame с загруженными данными
+                 DataFrame с загруженными данными
+                 DataFrame с загруженными данными
+                 DataFrame с загруженными данными
+           """
+
+3) Дообогащение сэмпла с данными  /src/features.py
+      - убрать неиспользуемый импорт from datetime import datetime
+      - аргументы методов привести в нижнему регистру
+      - типизация функций    add_time_features(df: pd.DataFrame) -> pd.DataFrame:
+      - описание входа выхода функций и функционала
+         add_time_features(df: pd.DataFrame) -> pd.DataFrame:
+         """
+           Добавим к выборке перобразование pickup_datetime в
+           часы,день недели, а также почистим от key
+
+           Args:
+                df : сэмпл с данными.
+
+           Returns:
+                DataFrame с загруженными данными
+           """
+      - Добавить отчистку датафрейма по ключу Key в формировании выхода
+        return df.drop(['key', 'pickup_datetime'], axis=1)
+
+4)  Функционал работы с моделями /src/data.py
+    - Описание класса TaxiFareModel:
+       class TaxiFareModel:
+       """Класс работы с моделью GradientBoostingRegressor"""
+
+    - Типизация выходных параметров методов класса
+       def predict(self, x) -> Any:
+       score(self, x, y) -> float:
+    - добавить импорт from typing import Any
+
+    - описание входа выхода методов класса и функционала
+        def predict(self, x) -> Any:
+          """  Расчте прогноз модели
+                     Args:
+                       x: Матрица признаков.
+                     Returns:
+                       Any прогноз модели
+          """
+        def fit(self, x, y):
+          """     Тренировка модели
+                Args:
+                    x: Матрица признаков.
+                    y: Целевая значение.
+          """
+    - добавить метод расчета скоринга модели
+           def score(self, x, y) -> float:
+            """     R^2 Скоринг модели на тестовой выборке
+                        Args:
+                            x: Матрица признаков.
+                            y: Целевая переменная
+                        Returns:
+                        float скоринг модели
+             """
+           return self.model.score(x, y)
+
+5) тоска входа /src/main.py
+    - перенести в корень проекта
+    - убрать не используемые импорты
+      import os
+      import pandas as pd
+    - Исправить путь до CSV на "data/uber.csv"
+    - Добавить  Отчитка данных он NaN значений
+      raw_data = df.dropna()
+      processed_data = add_time_features(raw_data)
+    - расчет скоринга модели перевсти на метод класса для возможности
+      дальнейших доработок и паттерна единой отвественности
+      # Оценка
+      score = model.score(X_test, y_test)
+
+6) перевести настроки окружения на UV для фиксации версий библиотек на версии интерпритатора
+    1) pip3 install uv
+    2) Создаём и активируем виртуальное окружение
+       uv venv .venv
+       source .venv/bin/activate
+    3) ставим библиотеки
+       uv add pandas'>=1.2.4'
+       uv add scikit-learn'>=0.24.1'
+       uv add pytest
+
+7) файл описания README.md
+   поправить команду запуска на python main.py
+
+8) добавить файл .gitignore
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+

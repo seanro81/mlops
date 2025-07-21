@@ -1,0 +1,24 @@
+from src.data import load_data, split_data
+from src.features import add_time_features
+from src.model import TaxiFareModel
+
+# Глобальная переменная
+DATA_PATH = "data/uber.csv"
+
+# Загрузка и обработка данных
+df = load_data(DATA_PATH)
+# Отчитка данных он NaN значений
+raw_data = df.dropna()
+processed_data = add_time_features(raw_data)
+
+X_train, X_test, y_train, y_test = split_data(processed_data)
+# Отчитка данных он NaN значений
+
+
+# Обучение модели
+model = TaxiFareModel()
+model.fit(X_train, y_train)
+
+# Оценка
+score = model.score(X_test, y_test)
+print(f"R²: {score:.2f}")
